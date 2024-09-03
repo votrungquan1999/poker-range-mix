@@ -9,7 +9,7 @@ export default async function AuthRequiredSection({
 
 	if (!session) {
 		return (
-			<div className="w-full h-full flex flex-col gap-4">
+			<div className="w-full flex flex-col gap-4">
 				<p className="text-amber-600 text-xl">
 					You need to sign in to access this page
 				</p>
@@ -31,5 +31,5 @@ export default async function AuthRequiredSection({
 		);
 	}
 
-	return <div>{children}</div>;
+	return <>{children}</>;
 }

@@ -16,7 +16,26 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={inter.className}>{children}</body>
+			<body className={inter.className}>
+				<div className="flex flex-row items-center justify-center bg-slate-100">
+					<div className="max-w-3xl w-full h-screen flex flex-col bg-white px-10">
+						<div className="flex-1">{children}</div>
+
+						<footer className="border-t border-blue-100 p-1">
+							<p>
+								Made with <span className="text-red-600">❤</span> by{" "}
+								<a
+									href="https://github.com/votrungquan1999"
+									className="underline text-blue-600"
+									target="https://github.com/votrungquan1999"
+								>
+									Quan Vo
+								</a>
+							</p>
+						</footer>
+					</div>
+				</div>
+			</body>
 		</html>
 	);
 }
