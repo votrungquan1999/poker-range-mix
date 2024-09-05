@@ -3,6 +3,7 @@ import { HomeIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import type { Metadata } from "next";
 import Link from "next/link";
+import type { ActionType, HandType } from "src/server/types/PokerSession";
 
 export const metadata: Metadata = {
 	title: "#Session Name here",
@@ -51,8 +52,6 @@ const handHistory: Record<HandType, Record<ActionType, number>> = {
 		Fold: 0,
 	},
 };
-
-type HandType = "WEAK" | "MED" | "STR" | "NUT";
 
 export default async function Session() {
 	return (
@@ -293,13 +292,6 @@ function RecordHandSection() {
 	);
 }
 
-type ActionType =
-	| "Check"
-	| "Check-Raise"
-	| "Bet"
-	| "Re-Raise"
-	| "All In"
-	| "Fold";
 function ActionButton({
 	action,
 	selectedAction,
