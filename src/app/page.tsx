@@ -1,5 +1,6 @@
 import AuthRequiredSection from "src/components/AuthRequiredSection";
 import Link from "next/link";
+import createNewSession from "src/server/actions/createNewSession";
 
 export default (async function Home() {
 	return (
@@ -10,13 +11,7 @@ export default (async function Home() {
 				</h1>
 
 				<div className="flex flex-1 justify-center flex-col gap-4 items-center">
-					<form
-						action={async () => {
-							"use server";
-
-							// redirect to new session page
-						}}
-					>
+					<form action={createNewSession}>
 						<button
 							type="submit"
 							className="px-4 py-2 text-lg font-semibold bg-blue-600 rounded text-white"
