@@ -99,6 +99,10 @@ function HandHistorySection({
 		"Fold",
 	];
 
+	const titleCaseHand = hand
+		.toLowerCase()
+		.replace(/^\w/, (c) => c.toUpperCase());
+
 	return (
 		<div
 			className={clsx("p-2 border rounded-lg shadow-md", {
@@ -109,25 +113,36 @@ function HandHistorySection({
 			})}
 		>
 			<h2
-				className={clsx("text-xl", {
+				className={clsx("text-lg", {
 					"text-red-600": hand === "WEAK",
 					"text-amber-600": hand === "MED",
 					"text-green-600": hand === "STR",
 					"text-fuchsia-600": hand === "NUT",
 				})}
 			>
-				Hand: {hand}
+				Hand: {titleCaseHand}
 			</h2>
 
-			<div className="grid grid-cols-4 gap-2">
+			<div className="grid grid-cols-6 gap-2">
 				{actions.map((action) => {
 					const count = actionHistory[action] ?? 0;
 
 					return (
-						<p key={action}>
-							{action}: {count}
-						</p>
+						<div
+							key={action}
+							className="flex flex-col border border-slate-200 rounded items-center"
+						>
+							<h3 className="text-4xl text-slate-800">{count}</h3>
+
+							<p className="text-slate-600 text-sm">{action}</p>
+						</div>
 					);
+
+					// return (
+					// 	<p key={action}>
+					// 		{action}: {count}
+					// 	</p>
+					// );
 				})}
 			</div>
 		</div>
@@ -136,7 +151,7 @@ function HandHistorySection({
 
 function RecordHandSection() {
 	return (
-		<div className="flex flex-col gap-4 p-4">
+		<div className="flex flex-col p-4">
 			<div className="flex flex-row justify-between">
 				<h2 className="text-2xl font-semibold text-slate-800">Hand #1</h2>
 
@@ -148,97 +163,114 @@ function RecordHandSection() {
 				</button>
 			</div>
 
-			<div className="flex flex-col gap-2">
-				<h2 className="text-lg font-semibold">Position</h2>
+			<div className="flex flex-col gap-4">
+				<div className="flex flex-col">
+					<h2 className="text-lg font-semibold">Position</h2>
 
-				<div className="flex flex-row gap-6">
-					<HandButton
-						section="Position"
-						value="IP"
-						selectedValue={selectedPosition}
-					/>
-
-					<HandButton
-						section="Position"
-						value="OOP"
-						selectedValue={selectedPosition}
-					/>
-				</div>
-			</div>
-
-			<div className="flex flex-col gap-2">
-				<h2 className="text-lg font-semibold">Hand</h2>
-
-				<div className="flex flex-row gap-6">
-					<HandButton
-						section="Hand"
-						value="WEAK"
-						selectedValue={selectedHand}
-					/>
-
-					<HandButton section="Hand" value="MED" selectedValue={selectedHand} />
-
-					<HandButton section="Hand" value="STR" selectedValue={selectedHand} />
-
-					<HandButton section="Hand" value="NUT" selectedValue={selectedHand} />
-				</div>
-			</div>
-
-			<div className="flex flex-col gap-2">
-				<h2 className="text-lg font-semibold">Street</h2>
-
-				<div className="flex flex-row justify-between pr-4">
-					<div className="flex flex-row gap-6 w-full">
+					<div className="flex flex-row gap-6">
 						<HandButton
-							section="Street"
-							value="PRE"
-							selectedValue={selectedStreet}
+							section="Position"
+							value="IP"
+							selectedValue={selectedPosition}
 						/>
 
 						<HandButton
-							section="Street"
-							value="FLOP"
-							selectedValue={selectedStreet}
-						/>
-
-						<HandButton
-							section="Street"
-							value="TURN"
-							selectedValue={selectedStreet}
-						/>
-
-						<HandButton
-							section="Street"
-							value="RIVER"
-							selectedValue={selectedStreet}
+							section="Position"
+							value="OOP"
+							selectedValue={selectedPosition}
 						/>
 					</div>
-
-					<button
-						type="button"
-						className="flex flex-row gap-2 items-center underline text-blue-600 text-lg whitespace-nowrap"
-					>
-						Next Street
-						<ArrowRightIcon className="w-6 h-6" />
-					</button>
 				</div>
-			</div>
 
-			<div className="flex flex-col gap-2">
-				<h2 className="text-lg font-semibold">Actions</h2>
+				<div className="flex flex-col">
+					<h2 className="text-lg font-semibold">Hand</h2>
 
-				<div className="flex flex-row flex-wrap gap-6">
-					<ActionButton action="Check" selectedAction={selectedAction} />
+					<div className="flex flex-row gap-6">
+						<HandButton
+							section="Hand"
+							value="WEAK"
+							selectedValue={selectedHand}
+						/>
 
-					<ActionButton action="Check-Raise" selectedAction={selectedAction} />
+						<HandButton
+							section="Hand"
+							value="MED"
+							selectedValue={selectedHand}
+						/>
 
-					<ActionButton action="Bet" selectedAction={selectedAction} />
+						<HandButton
+							section="Hand"
+							value="STR"
+							selectedValue={selectedHand}
+						/>
 
-					<ActionButton action="Re-Raise" selectedAction={selectedAction} />
+						<HandButton
+							section="Hand"
+							value="NUT"
+							selectedValue={selectedHand}
+						/>
+					</div>
+				</div>
 
-					<ActionButton action="All In" selectedAction={selectedAction} />
+				<div className="flex flex-col">
+					<h2 className="text-lg font-semibold">Street</h2>
 
-					<ActionButton action="Fold" selectedAction={selectedAction} />
+					<div className="flex flex-row justify-between pr-4">
+						<div className="flex flex-row gap-6 w-full">
+							<HandButton
+								section="Street"
+								value="PRE"
+								selectedValue={selectedStreet}
+							/>
+
+							<HandButton
+								section="Street"
+								value="FLOP"
+								selectedValue={selectedStreet}
+							/>
+
+							<HandButton
+								section="Street"
+								value="TURN"
+								selectedValue={selectedStreet}
+							/>
+
+							<HandButton
+								section="Street"
+								value="RIVER"
+								selectedValue={selectedStreet}
+							/>
+						</div>
+
+						<button
+							type="button"
+							className="flex flex-row gap-2 items-center underline text-blue-600 text-lg whitespace-nowrap"
+						>
+							Next Street
+							<ArrowRightIcon className="w-6 h-6" />
+						</button>
+					</div>
+				</div>
+
+				<div className="flex flex-col">
+					<h2 className="text-lg font-semibold">Actions</h2>
+
+					<div className="flex flex-row flex-wrap gap-6">
+						<ActionButton action="Check" selectedAction={selectedAction} />
+
+						<ActionButton
+							action="Check-Raise"
+							selectedAction={selectedAction}
+						/>
+
+						<ActionButton action="Bet" selectedAction={selectedAction} />
+
+						<ActionButton action="Re-Raise" selectedAction={selectedAction} />
+
+						<ActionButton action="All In" selectedAction={selectedAction} />
+
+						<ActionButton action="Fold" selectedAction={selectedAction} />
+					</div>
 				</div>
 			</div>
 		</div>
