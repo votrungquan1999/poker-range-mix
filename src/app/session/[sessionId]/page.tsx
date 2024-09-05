@@ -1,5 +1,12 @@
-import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { HomeIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import type { Metadata } from "next";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+	title: "#Session Name here",
+};
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
 	dateStyle: "medium",
@@ -50,9 +57,18 @@ type HandType = "WEAK" | "MED" | "STR" | "NUT";
 export default async function Session() {
 	return (
 		<div className="flex flex-col divide-y divide-blue-200">
-			<header className="flex flex-col gap-1 py-2 mt-4">
-				<h1 className="text-2xl font-semibold flex flex-row gap-2 text-slate-800">
-					Session:
+			<header className="py-2 mt-4">
+				<h1 className="text-2xl font-semibold flex flex-row gap-2 text-slate-800 whitespace-nowrap items-center">
+					<Link
+						href="/"
+						className="hover:underline hover:bg-blue-50 hover:text-blue-600 focus:underline focus:bg-blue-50 focus:text-blue-600 px-2 py-1 cursor-pointer rounded flex flex-row gap-2 items-center"
+					>
+						<HomeIcon className="w-6 h-6" />
+						PRM
+					</Link>
+
+					<ChevronRightIcon className="w-8 h-8" />
+
 					<input
 						defaultValue="#Session Name Input here"
 						className="w-full text-blue-600 hover:outline outline-2 rounded"

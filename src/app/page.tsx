@@ -5,7 +5,7 @@ import createNewSession from "src/server/actions/createNewSession";
 export default (async function Home() {
 	return (
 		<AuthRequiredSection>
-			<div className="flex flex-col items-center gap-20 h-full">
+			<div className="flex flex-col items-center gap-20 flex-1">
 				<h1 className="text-3xl text-blue-800 mt-8 font-bold absolute top-0">
 					WELCOME TO POKER RANGE MIXING
 				</h1>
