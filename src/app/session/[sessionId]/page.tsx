@@ -3,7 +3,14 @@ import { HomeIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import type { Metadata } from "next";
 import Link from "next/link";
-import type { ActionType, HandType } from "src/server/types/PokerSession";
+import { notFound } from "next/navigation";
+import { SessionCollectionName } from "src/server/collectionNames";
+import { injectMongoDB, getMongoDb } from "src/server/mongodb/mongodb";
+import type {
+	ActionType,
+	HandType,
+	PokerSessionDocument,
+} from "src/server/types/PokerSession";
 
 export const metadata: Metadata = {
 	title: "#Session Name here",
@@ -53,7 +60,27 @@ const handHistory: Record<HandType, Record<ActionType, number>> = {
 	},
 };
 
-export default async function Session() {
+const getSessionById = injectMongoDB(async function getSessionById(
+	sessionId: string,
+) {
+	const db = getMongoDb();
+
+	const collection = db.collection<PokerSessionDocument>(SessionCollectionName);
+
+	const session = await collection.findOne({ id: sessionId });
+
+	return session;
+});
+
+export default async function Session({
+	params,
+}: { params: { sessionId: string } }) {
+	const session = await getSessionById(params.sessionId);
+
+	if (!session) {
+		notFound();
+	}
+
 	return (
 		<div className="flex flex-col divide-y divide-blue-200">
 			<header className="py-2 mt-4">
@@ -69,7 +96,7 @@ export default async function Session() {
 					<ChevronRightIcon className="w-8 h-8" />
 
 					<input
-						defaultValue="#Session Name Input here"
+						defaultValue={session.name}
 						className="w-full text-blue-600 hover:outline outline-2 rounded"
 					/>
 				</h1>
