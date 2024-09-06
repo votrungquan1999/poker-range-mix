@@ -20,10 +20,7 @@ export default (async function Home() {
 						</button>
 					</form>
 
-					{/* 
-							TODO: redirect to join existing session page
-						*/}
-					<Link href="" className="text-blue-600 underline">
+					<Link href="/sessions" className="text-blue-600 underline">
 						Browse existing Sessions
 					</Link>
 				</div>

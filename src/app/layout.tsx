@@ -17,7 +17,7 @@ export default function RootLayout({
 		<html lang="en">
 			<body className={inter.className}>
 				{/* the layout that narrow the page */}
-				<div className="flex flex-row justify-center h-screen bg-slate-100">
+				<div className="flex flex-row justify-center min-h-screen bg-slate-100">
 					{/* the white background section, containing the main page and the footer */}
 					<div className="max-w-3xl w-full h-full flex flex-col bg-white px-10">
 						{children}
