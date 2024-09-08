@@ -9,7 +9,7 @@ export default async function AuthRequiredSection({
 
 	if (!session) {
 		return (
-			<div className="w-full flex flex-col gap-4">
+			<div className="w-full flex flex-col flex-1 gap-10 justify-center items-center">
 				<p className="text-amber-600 text-xl">
 					You need to sign in to access this page
 				</p>
