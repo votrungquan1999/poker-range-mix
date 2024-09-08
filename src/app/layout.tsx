@@ -20,8 +20,6 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={inter.className}>
-				<SpeedInsights />
-				<Analytics />
 				<TrackClientTimeZone />
 
 				{/* the layout that narrow the page */}
@@ -44,6 +42,10 @@ export default function RootLayout({
 						</footer>
 					</div>
 				</div>
+
+				<SpeedInsights />
+
+				<Analytics />
 			</body>
 		</html>
 	);
