@@ -10,6 +10,7 @@ import createNewSession from "src/server/actions/createNewSession";
 import RelativeTime from "src/components/RelativeTime";
 import Pagination from "src/components/Pagination";
 import { auth } from "src/auth";
+import ClientTimeDisplay from "src/components/ClientTimeDisplay";
 
 export const metadata: Metadata = {
 	title: "Poker Range Mixing - All Sessions",
@@ -153,7 +154,7 @@ function SessionsDisplay({
 						<p className="text-slate-800">
 							<span className="text-slate-500">Last played at: </span>
 
-							{dateFormatter.format(session.updatedAt)}
+							<ClientTimeDisplay time={session.updatedAt} />
 						</p>
 					</div>
 
