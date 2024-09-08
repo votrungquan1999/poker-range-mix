@@ -17,6 +17,7 @@ import onHandStrengthSelected from "./onHandStrengthSelected";
 import onPositionSelected from "./onPositionSelected";
 import handleNextStreet from "./handleNextStreet";
 import handleNewHand from "./handleNewHand";
+import SessionNameInput from "./SessionNameInput";
 
 export const metadata: Metadata = {
 	title: "#Session Name here",
@@ -99,9 +100,9 @@ export default async function Session({
 
 					<ChevronRightIcon className="w-8 h-8" />
 
-					<input
-						defaultValue={session.name}
-						className="w-full text-blue-600 hover:outline outline-2 rounded"
+					<SessionNameInput
+						sessionId={params.sessionId}
+						sessionName={session.name}
 					/>
 				</h1>
 
