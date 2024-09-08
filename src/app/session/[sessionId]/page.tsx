@@ -5,15 +5,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SessionCollectionName } from "src/server/collectionNames";
-import { injectMongoDB, getMongoDb } from "src/server/mongodb/mongodb";
+import { getMongoDb, injectMongoDB } from "src/server/mongodb/mongodb";
 import type {
 	ActionType,
 	HandType,
 	PokerHand,
 	PokerSessionDocument,
 } from "src/server/types/PokerSession";
-import onPositionSelected from "./onPositionSelected";
+import onActionSelected from "./onActionSelected";
 import onHandStrengthSelected from "./onHandStrengthSelected";
+import onPositionSelected from "./onPositionSelected";
 
 export const metadata: Metadata = {
 	title: "#Session Name here",
@@ -24,7 +25,6 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 	timeStyle: "short",
 });
 
-const selectedAction = "Check";
 const handHistory = {
 	WEAK: {
 		Check: 2,
@@ -200,12 +200,20 @@ function RecordHandSection({
 
 	const selectedHand = hand.streets[currentStreet]?.hand;
 
+	const selectedAction = hand.streets[currentStreet]?.action;
+
 	const bindedOnPositionSelected = onPositionSelected.bind(
 		null,
 		hand.id,
 		sessionId,
 	);
 	const bindedOnHandStrengthSelected = onHandStrengthSelected.bind(
+		null,
+		currentStreet,
+		hand.id,
+		sessionId,
+	);
+	const bindedOnActionSelected = onActionSelected.bind(
 		null,
 		currentStreet,
 		hand.id,
@@ -303,20 +311,41 @@ function RecordHandSection({
 					<h2 className="text-lg font-semibold">Actions</h2>
 
 					<div className="flex flex-row flex-wrap gap-6">
-						<ActionButton action="Check" selectedAction={selectedAction} />
+						<ActionButton
+							action="Check"
+							selectedAction={selectedAction}
+							onClick={bindedOnActionSelected}
+						/>
 
 						<ActionButton
 							action="Check-Raise"
 							selectedAction={selectedAction}
+							onClick={bindedOnActionSelected}
 						/>
 
-						<ActionButton action="Bet" selectedAction={selectedAction} />
+						<ActionButton
+							action="Bet"
+							selectedAction={selectedAction}
+							onClick={bindedOnActionSelected}
+						/>
 
-						<ActionButton action="Re-Raise" selectedAction={selectedAction} />
+						<ActionButton
+							action="Re-Raise"
+							selectedAction={selectedAction}
+							onClick={bindedOnActionSelected}
+						/>
 
-						<ActionButton action="All In" selectedAction={selectedAction} />
+						<ActionButton
+							action="All In"
+							selectedAction={selectedAction}
+							onClick={bindedOnActionSelected}
+						/>
 
-						<ActionButton action="Fold" selectedAction={selectedAction} />
+						<ActionButton
+							action="Fold"
+							selectedAction={selectedAction}
+							onClick={bindedOnActionSelected}
+						/>
 					</div>
 				</div>
 			</div>
@@ -327,20 +356,33 @@ function RecordHandSection({
 function ActionButton({
 	action,
 	selectedAction,
-}: { action: ActionType; selectedAction: ActionType }) {
+	onClick,
+}: {
+	action: ActionType;
+	selectedAction: ActionType | undefined;
+	onClick: (value: ActionType) => Promise<void>;
+}) {
 	return (
-		<button
-			type="button"
-			className={clsx(
-				"text-xl px-2 py-1 rounded-lg cursor-pointer whitespace-nowrap border border-amber-600 shadow outline-amber-600",
-				{
-					"bg-amber-600 text-white": selectedAction === action,
-					"bg-white text-amber-600": selectedAction !== action,
-				},
-			)}
+		<form
+			action={async () => {
+				"use server";
+
+				await onClick(action);
+			}}
 		>
-			{action}
-		</button>
+			<button
+				type="submit"
+				className={clsx(
+					"text-xl px-2 py-1 rounded-lg cursor-pointer whitespace-nowrap border border-amber-600 shadow outline-amber-600",
+					{
+						"bg-amber-600 text-white": selectedAction === action,
+						"bg-white text-amber-600": selectedAction !== action,
+					},
+				)}
+			>
+				{action}
+			</button>
+		</form>
 	);
 }
 
@@ -352,19 +394,18 @@ function HandButton({
 	value: string;
 	selectedValue?: string;
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	action?: (value: any) => Promise<void>;
+	action: (value: any) => Promise<void>;
 }) {
 	return (
 		<form
 			action={async () => {
 				"use server";
-				if (!action) return;
 
 				await action(value);
 			}}
 		>
 			<button
-				type={action ? "submit" : "button"}
+				type="submit"
 				className={clsx(
 					"text-xl px-2 py-1 rounded cursor-pointer border border-blue-600 shadow outline-blue-600",
 					{
