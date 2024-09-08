@@ -35,6 +35,9 @@ export default injectMongoDB(async function handleNewHand(sessionId: string) {
 					streets: {},
 				},
 			},
+			$set: {
+				updatedAt: Date.now(),
+			},
 		},
 	);
 

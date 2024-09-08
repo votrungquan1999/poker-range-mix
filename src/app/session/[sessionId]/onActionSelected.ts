@@ -37,6 +37,9 @@ export default injectMongoDB(async function onActionSelected(
 		{
 			$set: {
 				[`hands.$.streets.${street}`]: streetToUpdate,
+				"hands.$.playedAt": Date.now(),
+
+				updatedAt: Date.now(),
 			},
 		},
 	);

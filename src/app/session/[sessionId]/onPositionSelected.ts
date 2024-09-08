@@ -25,6 +25,9 @@ export default injectMongoDB(async function onPositionSelected(
 		{
 			$set: {
 				"hands.$[hand].position": position,
+				"hands.$[hand].playedAt": Date.now(),
+
+				updatedAt: Date.now(),
 			},
 		},
 		{

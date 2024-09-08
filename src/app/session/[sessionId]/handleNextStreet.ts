@@ -47,6 +47,9 @@ export default injectMongoDB(async function handleNextStreet(
 		{
 			$set: {
 				"hands.$.activeStreet": nextStreet,
+				"hands.$.playedAt": Date.now(),
+
+				updatedAt: Date.now(),
 			},
 		},
 	);
