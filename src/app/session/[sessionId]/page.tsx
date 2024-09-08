@@ -195,9 +195,8 @@ function RecordHandSection({
 	// const
 
 	// currentStreet is the last street that has an action
-	const currentStreet = streetOrder.find(
-		(street) => hand.streets[street]?.action,
-	);
+	const currentStreet =
+		streetOrder.find((street) => hand.streets[street]?.action) ?? "FLOP";
 
 	return (
 		<div className="flex flex-col p-4">
@@ -242,20 +241,19 @@ function RecordHandSection({
 				<div className="flex flex-col">
 					<h2 className="text-lg font-semibold">Street</h2>
 
-					<div className="flex flex-row justify-between pr-4">
-						<div className="flex flex-row gap-6 w-full">
-							<HandButton value="PRE" selectedValue={currentStreet} />
-
-							<HandButton value="FLOP" selectedValue={currentStreet} />
-
-							<HandButton value="TURN" selectedValue={currentStreet} />
-
-							<HandButton value="RIVER" selectedValue={currentStreet} />
-						</div>
+					<div className="flex flex-row gap-10 pr-4">
+						<p className="text-xl px-2 py-1 rounded border border-blue-600 shadow outline-blue-600 text-blue-600">
+							{currentStreet}
+						</p>
 
 						<button
-							type="button"
-							className="flex flex-row gap-2 items-center underline text-blue-600 text-lg whitespace-nowrap"
+							type={currentStreet === "RIVER" ? "button" : "submit"}
+							className={clsx(
+								"flex flex-row gap-2 items-center underline text-blue-600 text-lg whitespace-nowrap hover:outline outline-blue-400 rounded outline-2 px-2",
+								{
+									"opacity-50": currentStreet === "RIVER",
+								},
+							)}
 						>
 							Next Street
 							<ArrowRightIcon className="w-6 h-6" />
