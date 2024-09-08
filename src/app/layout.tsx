@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthRequiredSection from "src/components/AuthRequiredSection";
+import TrackClientTimeZone from "src/components/TrackClientTimeZone";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,6 +18,8 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={inter.className}>
+				<TrackClientTimeZone />
+
 				{/* the layout that narrow the page */}
 				<div className="flex flex-row justify-center bg-slate-100">
 					{/* the white background section, containing the main page and the footer */}
