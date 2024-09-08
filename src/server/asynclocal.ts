@@ -71,6 +71,7 @@ export default function setup<T>(initializer: () => Promise<T>): AsyncLocal<T> {
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function flow<Arr extends Inject<any>[]>(
 	...injectors: Arr
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 ): Inject<any> {
 	return lodashFlow(...injectors);
 }

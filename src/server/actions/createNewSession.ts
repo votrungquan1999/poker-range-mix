@@ -30,7 +30,16 @@ export default injectMongoDB(async function createNewSession() {
 		createdAt: Date.now(),
 		id,
 
-		hands: [],
+		hands: [
+			{
+				id: nanoid(),
+				order: 1,
+				playedAt: Date.now(),
+				streets: {
+					PRE: {},
+				},
+			},
+		],
 		// default name should have the time of creation
 		name: `${dateFormatter.format(Date.now())}`,
 

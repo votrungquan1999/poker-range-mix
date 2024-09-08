@@ -9,8 +9,10 @@ import { injectMongoDB, getMongoDb } from "src/server/mongodb/mongodb";
 import type {
 	ActionType,
 	HandType,
+	PokerHand,
 	PokerSessionDocument,
 } from "src/server/types/PokerSession";
+import onPositionSelected from "./onPositionSelected";
 
 export const metadata: Metadata = {
 	title: "#Session Name here",
@@ -21,11 +23,9 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 	timeStyle: "short",
 });
 
-const selectedPosition: string = "IP";
 const selectedHand: string = "STR";
-const selectedStreet: string = "FLOP";
 const selectedAction = "Check";
-const handHistory: Record<HandType, Record<ActionType, number>> = {
+const handHistory = {
 	WEAK: {
 		Check: 2,
 		"Check-Raise": 1,
@@ -81,6 +81,8 @@ export default async function Session({
 		notFound();
 	}
 
+	const lastHand = session.hands[session.hands.length - 1];
+
 	return (
 		<div className="flex flex-col divide-y divide-blue-200">
 			<header className="py-2 mt-4">
@@ -101,14 +103,14 @@ export default async function Session({
 					/>
 				</h1>
 
-				<p className="text-slate-800">
+				<p className="text-slate-800 px-2">
 					<span className="text-slate-500">Last played at: </span>
 
 					{dateFormatter.format(Date.now())}
 				</p>
 			</header>
 
-			<RecordHandSection />
+			<RecordHandSection hand={lastHand} sessionId={params.sessionId} />
 
 			<div className="p-4 flex flex-col gap-4">
 				<h2 className="text-2xl font-semibold text-slate-800">
@@ -179,23 +181,30 @@ function HandHistorySection({
 							<p className="text-slate-600 text-sm">{action}</p>
 						</div>
 					);
-
-					// return (
-					// 	<p key={action}>
-					// 		{action}: {count}
-					// 	</p>
-					// );
 				})}
 			</div>
 		</div>
 	);
 }
 
-function RecordHandSection() {
+const streetOrder = ["PRE", "FLOP", "TURN", "RIVER"] as const;
+function RecordHandSection({
+	hand,
+	sessionId,
+}: { hand: PokerHand; sessionId: string }) {
+	// const
+
+	// currentStreet is the last street that has an action
+	const currentStreet = streetOrder.find(
+		(street) => hand.streets[street]?.action,
+	);
+
 	return (
 		<div className="flex flex-col p-4">
 			<div className="flex flex-row justify-between">
-				<h2 className="text-2xl font-semibold text-slate-800">Hand #1</h2>
+				<h2 className="text-2xl font-semibold text-slate-800">
+					Hand #{hand.order}
+				</h2>
 
 				<button
 					type="button"
@@ -211,45 +220,21 @@ function RecordHandSection() {
 
 					<div className="flex flex-row gap-6">
 						<HandButton
-							section="Position"
 							value="IP"
-							selectedValue={selectedPosition}
+							selectedValue={hand.position}
+							action={async () => {
+								"use server";
+								await onPositionSelected("IP", hand.id, sessionId);
+							}}
 						/>
 
 						<HandButton
-							section="Position"
 							value="OOP"
-							selectedValue={selectedPosition}
-						/>
-					</div>
-				</div>
-
-				<div className="flex flex-col">
-					<h2 className="text-lg font-semibold">Hand</h2>
-
-					<div className="flex flex-row gap-6">
-						<HandButton
-							section="Hand"
-							value="WEAK"
-							selectedValue={selectedHand}
-						/>
-
-						<HandButton
-							section="Hand"
-							value="MED"
-							selectedValue={selectedHand}
-						/>
-
-						<HandButton
-							section="Hand"
-							value="STR"
-							selectedValue={selectedHand}
-						/>
-
-						<HandButton
-							section="Hand"
-							value="NUT"
-							selectedValue={selectedHand}
+							selectedValue={hand.position}
+							action={async () => {
+								"use server";
+								await onPositionSelected("OOP", hand.id, sessionId);
+							}}
 						/>
 					</div>
 				</div>
@@ -259,29 +244,13 @@ function RecordHandSection() {
 
 					<div className="flex flex-row justify-between pr-4">
 						<div className="flex flex-row gap-6 w-full">
-							<HandButton
-								section="Street"
-								value="PRE"
-								selectedValue={selectedStreet}
-							/>
+							<HandButton value="PRE" selectedValue={currentStreet} />
 
-							<HandButton
-								section="Street"
-								value="FLOP"
-								selectedValue={selectedStreet}
-							/>
+							<HandButton value="FLOP" selectedValue={currentStreet} />
 
-							<HandButton
-								section="Street"
-								value="TURN"
-								selectedValue={selectedStreet}
-							/>
+							<HandButton value="TURN" selectedValue={currentStreet} />
 
-							<HandButton
-								section="Street"
-								value="RIVER"
-								selectedValue={selectedStreet}
-							/>
+							<HandButton value="RIVER" selectedValue={currentStreet} />
 						</div>
 
 						<button
@@ -291,6 +260,20 @@ function RecordHandSection() {
 							Next Street
 							<ArrowRightIcon className="w-6 h-6" />
 						</button>
+					</div>
+				</div>
+
+				<div className="flex flex-col">
+					<h2 className="text-lg font-semibold">Hand</h2>
+
+					<div className="flex flex-row gap-6">
+						<HandButton value="WEAK" selectedValue={selectedHand} />
+
+						<HandButton value="MED" selectedValue={selectedHand} />
+
+						<HandButton value="STR" selectedValue={selectedHand} />
+
+						<HandButton value="NUT" selectedValue={selectedHand} />
 					</div>
 				</div>
 
@@ -340,26 +323,28 @@ function ActionButton({
 }
 
 function HandButton({
-	section,
 	value,
 	selectedValue,
+	action,
 }: {
-	section: "Position" | "Hand" | "Street";
 	value: string;
-	selectedValue: string;
+	selectedValue?: string;
+	action?: () => Promise<void>;
 }) {
 	return (
-		<button
-			type="button"
-			className={clsx(
-				"text-xl px-2 py-1 rounded cursor-pointer border border-blue-600 shadow outline-blue-600",
-				{
-					"bg-blue-600 text-white": selectedValue === value,
-					"bg-white text-blue-600": selectedValue !== value,
-				},
-			)}
-		>
-			{value}
-		</button>
+		<form action={action}>
+			<button
+				type="submit"
+				className={clsx(
+					"text-xl px-2 py-1 rounded cursor-pointer border border-blue-600 shadow outline-blue-600",
+					{
+						"bg-blue-600 text-white": selectedValue === value,
+						"bg-white text-blue-600": selectedValue !== value,
+					},
+				)}
+			>
+				{value}
+			</button>
+		</form>
 	);
 }

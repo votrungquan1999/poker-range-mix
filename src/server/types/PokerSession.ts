@@ -13,22 +13,27 @@ export interface PokerHand {
 	id: string;
 	order: number;
 
-	position: PositionType;
-	streets: Record<StreetType, PokerStreet>;
+	position?: PositionType;
+	streets: {
+		PRE?: PokerStreet;
+		FLOP?: PokerStreet;
+		TURN?: PokerStreet;
+		RIVER?: PokerStreet;
+	};
 
 	playedAt: number;
 }
 
 export interface PokerStreet {
-	hand: HandType;
-	action: ActionType;
+	hand?: HandType;
+	action?: ActionType;
 }
 
 export type PositionType = "IP" | "OOP";
 
 export type StreetType = "PRE" | "FLOP" | "TURN" | "RIVER";
 
-export type HandType = "WEAK" | "MED" | "STR" | "NUT";
+export type HandType = "WEAK" | "MED" | "STR" | "DRAW" | "NUT";
 
 export type ActionType =
 	| "Check"
