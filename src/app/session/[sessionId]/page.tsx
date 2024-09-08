@@ -18,6 +18,7 @@ import onPositionSelected from "./onPositionSelected";
 import handleNextStreet from "./handleNextStreet";
 import handleNewHand from "./handleNewHand";
 import SessionNameInput from "./SessionNameInput";
+import { auth } from "src/auth";
 
 export async function generateMetadata({
 	params,
@@ -53,10 +54,20 @@ const getSessionById = injectMongoDB(async function getSessionById(
 export default async function Session({
 	params,
 }: { params: { sessionId: string } }) {
+	const logInSession = await auth();
+
+	if (!logInSession) {
+		return null;
+	}
+
 	const session = await getSessionById(params.sessionId);
 
 	if (!session) {
 		notFound();
+	}
+
+	if (session.createdBy !== logInSession.user.email) {
+		throw new Error("Unauthorized");
 	}
 
 	const lastHand = session.hands[session.hands.length - 1];

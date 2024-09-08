@@ -9,17 +9,14 @@ import RefreshButton from "src/components/RefreshButton";
 import createNewSession from "src/server/actions/createNewSession";
 import RelativeTime from "src/components/RelativeTime";
 import Pagination from "src/components/Pagination";
+import { auth } from "src/auth";
 
 export const metadata: Metadata = {
 	title: "Poker Range Mixing - All Sessions",
 };
 
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-	dateStyle: "medium",
-	timeStyle: "short",
-});
-
 const getAllSessions = injectMongoDB(async function getAllSessions(
+	userId: string,
 	currentPage: number,
 ) {
 	const db = getMongoDb();
@@ -29,7 +26,9 @@ const getAllSessions = injectMongoDB(async function getAllSessions(
 
 	const sessions = await db
 		.collection<PokerSessionDocument>(SessionCollectionName)
-		.find()
+		.find({
+			createdBy: userId,
+		})
 		.sort({ updatedAt: -1 })
 		.skip(skip)
 		.limit(limit)
@@ -54,7 +53,16 @@ export default async function SessionsPage({
 }) {
 	const currentPage = searchParams.currentPage || 1;
 
-	const { sessions, sessionCount } = await getAllSessions(currentPage);
+	const logInSession = await auth();
+
+	if (!logInSession) {
+		return null;
+	}
+
+	const { sessions, sessionCount } = await getAllSessions(
+		logInSession.user.email,
+		currentPage,
+	);
 
 	const serverNow = Date.now();
 
@@ -97,7 +105,7 @@ export default async function SessionsPage({
 					</form>
 				</div>
 
-				<SessionDisplay sessions={sessions} />
+				<SessionsDisplay sessions={sessions} />
 
 				<Pagination currentPage={currentPage} pages={pages} />
 			</div>
@@ -105,7 +113,7 @@ export default async function SessionsPage({
 	);
 }
 
-function SessionDisplay({
+function SessionsDisplay({
 	sessions,
 }: {
 	sessions: PokerSessionDocument[];
