@@ -31,7 +31,7 @@ export interface PokerStreet {
 
 export type PositionType = "IP" | "OOP";
 
-export type StreetType = "PRE" | "FLOP" | "TURN" | "RIVER";
+export type StreetType = "FLOP" | "TURN" | "RIVER";
 
 export type HandType = "WEAK" | "MED" | "STR" | "DRAW" | "NUT";
 

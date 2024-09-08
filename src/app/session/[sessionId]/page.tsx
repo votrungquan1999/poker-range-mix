@@ -13,6 +13,7 @@ import type {
 	PokerSessionDocument,
 } from "src/server/types/PokerSession";
 import onPositionSelected from "./onPositionSelected";
+import onHandStrengthSelected from "./onHandStrengthSelected";
 
 export const metadata: Metadata = {
 	title: "#Session Name here",
@@ -23,7 +24,6 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 	timeStyle: "short",
 });
 
-const selectedHand: string = "STR";
 const selectedAction = "Check";
 const handHistory = {
 	WEAK: {
@@ -187,16 +187,18 @@ function HandHistorySection({
 	);
 }
 
-const streetOrder = ["PRE", "FLOP", "TURN", "RIVER"] as const;
+const streetOrder = ["FLOP", "TURN", "RIVER"] as const;
 function RecordHandSection({
 	hand,
 	sessionId,
 }: { hand: PokerHand; sessionId: string }) {
-	// const
-
-	// currentStreet is the last street that has an action
+	// currentStreet is the last street that has an action or hand recorded
 	const currentStreet =
-		streetOrder.find((street) => hand.streets[street]?.action) ?? "FLOP";
+		streetOrder.find(
+			(street) => hand.streets[street]?.action || hand.streets[street]?.hand,
+		) ?? "FLOP";
+
+	const selectedHand = hand.streets[currentStreet]?.hand;
 
 	return (
 		<div className="flex flex-col p-4">
@@ -265,13 +267,61 @@ function RecordHandSection({
 					<h2 className="text-lg font-semibold">Hand</h2>
 
 					<div className="flex flex-row gap-6">
-						<HandButton value="WEAK" selectedValue={selectedHand} />
+						<HandButton
+							value="WEAK"
+							selectedValue={selectedHand}
+							action={async () => {
+								"use server";
+								await onHandStrengthSelected(
+									"WEAK",
+									currentStreet,
+									hand.id,
+									sessionId,
+								);
+							}}
+						/>
 
-						<HandButton value="MED" selectedValue={selectedHand} />
+						<HandButton
+							value="MED"
+							selectedValue={selectedHand}
+							action={async () => {
+								"use server";
+								await onHandStrengthSelected(
+									"MED",
+									currentStreet,
+									hand.id,
+									sessionId,
+								);
+							}}
+						/>
 
-						<HandButton value="STR" selectedValue={selectedHand} />
+						<HandButton
+							value="STR"
+							selectedValue={selectedHand}
+							action={async () => {
+								"use server";
+								await onHandStrengthSelected(
+									"STR",
+									currentStreet,
+									hand.id,
+									sessionId,
+								);
+							}}
+						/>
 
-						<HandButton value="NUT" selectedValue={selectedHand} />
+						<HandButton
+							value="NUT"
+							selectedValue={selectedHand}
+							action={async () => {
+								"use server";
+								await onHandStrengthSelected(
+									"NUT",
+									currentStreet,
+									hand.id,
+									sessionId,
+								);
+							}}
+						/>
 					</div>
 				</div>
 
