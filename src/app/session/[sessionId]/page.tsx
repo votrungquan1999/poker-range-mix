@@ -332,7 +332,7 @@ function HandButton({
 	return (
 		<form action={action}>
 			<button
-				type="submit"
+				type={action ? "submit" : "button"}
 				className={clsx(
 					"text-xl px-2 py-1 rounded cursor-pointer border border-blue-600 shadow outline-blue-600",
 					{
