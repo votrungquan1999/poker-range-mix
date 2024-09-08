@@ -119,23 +119,79 @@ export default async function Session({
 				<h2 className="text-2xl font-semibold text-slate-800">
 					Session History:
 				</h2>
-				<div className="flex-col gap-4 flex">
-					<HandHistorySection hand="WEAK" actionHistory={handHistory.WEAK} />
-					<HandHistorySection hand="MED" actionHistory={handHistory.MED} />
-					<HandHistorySection hand="STR" actionHistory={handHistory.STR} />
-					<HandHistorySection hand="NUT" actionHistory={handHistory.NUT} />
-				</div>
+
+				<HandHistorySection sessionId={params.sessionId} />
 			</div>
 		</div>
 	);
 }
 
-function HandHistorySection({
-	actionHistory,
-	hand,
+type ActionHistory = {
+	[key in HandType]: Record<ActionType, number>;
+};
+
+const getActionHistory = injectMongoDB(async function getActionHistory(
+	sessionId: string,
+): Promise<ActionHistory> {
+	const db = getMongoDb();
+
+	const collection = db.collection<PokerSessionDocument>(SessionCollectionName);
+
+	const session = await collection.findOne({ id: sessionId });
+
+	if (!session) {
+		throw new Error("Session not found");
+	}
+
+	const actionHistory: ActionHistory = {
+		WEAK: getActionsByHandStrength(session.hands, "WEAK"),
+		MED: getActionsByHandStrength(session.hands, "MED"),
+		STR: getActionsByHandStrength(session.hands, "STR"),
+		DRAW: getActionsByHandStrength(session.hands, "DRAW"),
+		NUT: getActionsByHandStrength(session.hands, "NUT"),
+	};
+
+	return actionHistory;
+});
+
+function getActionsByHandStrength(
+	hands: PokerHand[],
+	handStrength: HandType,
+): Record<ActionType, number> {
+	const actionHistory = hands.reduce(
+		(acc, hand) => {
+			if (hand.streets.FLOP?.hand === handStrength) {
+				acc[hand.streets.FLOP.action ?? "Check"]++;
+			}
+			if (hand.streets.TURN?.hand === handStrength) {
+				acc[hand.streets.TURN.action ?? "Check"]++;
+			}
+			if (hand.streets.RIVER?.hand === handStrength) {
+				acc[hand.streets.RIVER.action ?? "Check"]++;
+			}
+
+			return acc;
+		},
+		{
+			Check: 0,
+			"Check-Raise": 0,
+			Bet: 0,
+			"Re-Raise": 0,
+			"All In": 0,
+			Fold: 0,
+		},
+	);
+
+	return actionHistory;
+}
+
+async function HandHistorySection({
+	sessionId,
+	// hand,
 }: {
-	hand: HandType;
-	actionHistory: Record<ActionType, number>;
+	sessionId: string;
+	// hand: HandType;
+	// actionHistory: Record<ActionType, number>;
 }) {
 	const actions: ActionType[] = [
 		"Check",
@@ -146,46 +202,61 @@ function HandHistorySection({
 		"Fold",
 	];
 
-	const titleCaseHand = hand
-		.toLowerCase()
-		.replace(/^\w/, (c) => c.toUpperCase());
+	const hands: HandType[] = ["WEAK", "MED", "STR", "DRAW", "NUT"];
+
+	const actionHistory = await getActionHistory(sessionId);
 
 	return (
-		<div
-			className={clsx("p-2 border rounded-lg shadow-md", {
-				"border-red-600": hand === "WEAK",
-				"border-amber-600": hand === "MED",
-				"border-green-600": hand === "STR",
-				"border-fuchsia-600": hand === "NUT",
-			})}
-		>
-			<h2
-				className={clsx("text-lg", {
-					"text-red-600": hand === "WEAK",
-					"text-amber-600": hand === "MED",
-					"text-green-600": hand === "STR",
-					"text-fuchsia-600": hand === "NUT",
-				})}
-			>
-				Hand: {titleCaseHand}
-			</h2>
+		<div className="flex-col gap-4 flex">
+			{hands.map((hand) => {
+				const titleCaseHand = hand
+					.toLowerCase()
+					.replace(/^\w/, (c) => c.toUpperCase());
 
-			<div className="grid grid-cols-6 gap-2">
-				{actions.map((action) => {
-					const count = actionHistory[action] ?? 0;
+				const strengthActions = actionHistory[hand];
 
-					return (
-						<div
-							key={action}
-							className="flex flex-col border border-slate-200 rounded items-center"
+				return (
+					<div
+						key={hand}
+						className={clsx("p-2 border rounded-lg shadow-md", {
+							"border-red-600": hand === "WEAK",
+							"border-amber-600": hand === "MED",
+							"border-green-600": hand === "STR",
+							"border-slate-400": hand === "DRAW",
+							"border-fuchsia-600": hand === "NUT",
+						})}
+					>
+						<h2
+							className={clsx("text-lg", {
+								"text-red-600": hand === "WEAK",
+								"text-amber-600": hand === "MED",
+								"text-green-600": hand === "STR",
+								"text-slate-400": hand === "DRAW",
+								"text-fuchsia-600": hand === "NUT",
+							})}
 						>
-							<h3 className="text-4xl text-slate-800">{count}</h3>
+							{titleCaseHand}
+						</h2>
 
-							<p className="text-slate-600 text-sm">{action}</p>
+						<div className="grid grid-cols-6 gap-2">
+							{actions.map((action) => {
+								const count = strengthActions[action] ?? 0;
+
+								return (
+									<div
+										key={action}
+										className="flex flex-col border border-slate-200 rounded items-center"
+									>
+										<h3 className="text-4xl text-slate-800">{count}</h3>
+
+										<p className="text-slate-600 text-sm">{action}</p>
+									</div>
+								);
+							})}
 						</div>
-					);
-				})}
-			</div>
+					</div>
+				);
+			})}
 		</div>
 	);
 }
