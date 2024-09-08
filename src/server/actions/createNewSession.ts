@@ -35,9 +35,8 @@ export default injectMongoDB(async function createNewSession() {
 				id: nanoid(),
 				order: 1,
 				playedAt: Date.now(),
-				streets: {
-					PRE: {},
-				},
+				activeStreet: "FLOP",
+				streets: {},
 			},
 		],
 		// default name should have the time of creation

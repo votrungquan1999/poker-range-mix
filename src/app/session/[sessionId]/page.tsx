@@ -16,6 +16,7 @@ import onActionSelected from "./onActionSelected";
 import onHandStrengthSelected from "./onHandStrengthSelected";
 import onPositionSelected from "./onPositionSelected";
 import handleNextStreet from "./handleNextStreet";
+import handleNewHand from "./handleNewHand";
 
 export const metadata: Metadata = {
 	title: "#Session Name here",
@@ -223,6 +224,8 @@ function RecordHandSection({
 		sessionId,
 	);
 
+	const bindedHandleNewHand = handleNewHand.bind(null, sessionId);
+
 	return (
 		<div className="flex flex-col p-4">
 			<div className="flex flex-row justify-between">
@@ -230,12 +233,14 @@ function RecordHandSection({
 					Hand #{hand.order}
 				</h2>
 
-				<button
-					type="button"
-					className="px-2 py-1 border rounded border-blue-100 text-blue-600 hover:text-white hover:bg-blue-600"
-				>
-					Next Hand
-				</button>
+				<form action={bindedHandleNewHand}>
+					<button
+						type="submit"
+						className="px-2 py-1 border rounded border-blue-100 text-blue-600 hover:text-white hover:bg-blue-600"
+					>
+						Next Hand
+					</button>
+				</form>
 			</div>
 
 			<div className="flex flex-col gap-4">
