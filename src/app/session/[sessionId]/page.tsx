@@ -19,49 +19,24 @@ import handleNextStreet from "./handleNextStreet";
 import handleNewHand from "./handleNewHand";
 import SessionNameInput from "./SessionNameInput";
 
-export const metadata: Metadata = {
-	title: "#Session Name here",
-};
+export async function generateMetadata({
+	params,
+}: { params: { sessionId: string } }): Promise<Metadata> {
+	const session = await getSessionById(params.sessionId);
+
+	if (!session) {
+		notFound();
+	}
+
+	return {
+		title: `PRM - ${session.name}`,
+	};
+}
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
 	dateStyle: "medium",
 	timeStyle: "short",
 });
-
-const handHistory = {
-	WEAK: {
-		Check: 2,
-		"Check-Raise": 1,
-		Bet: 1,
-		"Re-Raise": 1,
-		"All In": 0,
-		Fold: 0,
-	},
-	MED: {
-		Check: 2,
-		"Check-Raise": 1,
-		Bet: 1,
-		"Re-Raise": 1,
-		"All In": 0,
-		Fold: 0,
-	},
-	STR: {
-		Check: 2,
-		"Check-Raise": 1,
-		Bet: 1,
-		"Re-Raise": 1,
-		"All In": 0,
-		Fold: 0,
-	},
-	NUT: {
-		Check: 2,
-		"Check-Raise": 1,
-		Bet: 1,
-		"Re-Raise": 1,
-		"All In": 0,
-		Fold: 0,
-	},
-};
 
 const getSessionById = injectMongoDB(async function getSessionById(
 	sessionId: string,
