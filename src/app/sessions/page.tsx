@@ -11,6 +11,7 @@ import RelativeTime from "src/components/RelativeTime";
 import Pagination from "src/components/Pagination";
 import { auth } from "src/auth";
 import getClientDateFormatter from "src/server/getClientDateFormatter";
+import UserAccount from "src/components/UserAccount";
 
 export const metadata: Metadata = {
 	title: "Poker Range Mixing - All Sessions",
@@ -71,7 +72,7 @@ export default async function SessionsPage({
 
 	return (
 		<div className="flex flex-col divide-y divide-blue-200 flex-1">
-			<header className="py-2 mt-4">
+			<header className="py-2 mt-4 flex flex-row justify-between items-center">
 				<h1 className="text-2xl font-semibold flex flex-row gap-2 text-slate-800 whitespace-nowrap items-center">
 					<Link
 						href="/"
@@ -85,6 +86,8 @@ export default async function SessionsPage({
 
 					<p>All Sessions</p>
 				</h1>
+
+				<UserAccount />
 			</header>
 
 			<div className="p-2 flex flex-col gap-4">

@@ -20,6 +20,7 @@ import handleNewHand from "./handleNewHand";
 import SessionNameInput from "./SessionNameInput";
 import { auth } from "src/auth";
 import getClientDateFormatter from "src/server/getClientDateFormatter";
+import UserAccount from "src/components/UserAccount";
 
 export async function generateMetadata({
 	params,
@@ -72,29 +73,33 @@ export default async function Session({
 
 	return (
 		<div className="flex flex-col divide-y divide-blue-200">
-			<header className="py-2 mt-4">
-				<h1 className="text-2xl font-semibold flex flex-row gap-2 text-slate-800 whitespace-nowrap items-center">
-					<Link
-						href="/"
-						className="hover:underline hover:bg-blue-50 hover:text-blue-600 focus:underline focus:bg-blue-50 focus:text-blue-600 px-2 py-1 cursor-pointer rounded flex flex-row gap-2 items-center"
-					>
-						<HomeIcon className="w-6 h-6" />
-						PRM
-					</Link>
+			<header className="py-2 mt-4 flex flex-row justify-between">
+				<div>
+					<h1 className="text-2xl font-semibold flex flex-row gap-2 text-slate-800 whitespace-nowrap items-center">
+						<Link
+							href="/"
+							className="hover:underline hover:bg-blue-50 hover:text-blue-600 focus:underline focus:bg-blue-50 focus:text-blue-600 px-2 py-1 cursor-pointer rounded flex flex-row gap-2 items-center"
+						>
+							<HomeIcon className="w-6 h-6" />
+							PRM
+						</Link>
 
-					<ChevronRightIcon className="w-8 h-8" />
+						<ChevronRightIcon className="w-8 h-8" />
 
-					<SessionNameInput
-						sessionId={params.sessionId}
-						sessionName={session.name}
-					/>
-				</h1>
+						<SessionNameInput
+							sessionId={params.sessionId}
+							sessionName={session.name}
+						/>
+					</h1>
 
-				<p className="text-slate-800 px-2">
-					<span className="text-slate-500">Last played at: </span>
+					<p className="text-slate-800 px-2">
+						<span className="text-slate-500">Last played at: </span>
 
-					{dateFormatter.format(lastHand.playedAt)}
-				</p>
+						{dateFormatter.format(lastHand.playedAt)}
+					</p>
+				</div>
+
+				<UserAccount />
 			</header>
 
 			<RecordHandSection hand={lastHand} sessionId={params.sessionId} />
