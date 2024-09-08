@@ -6,19 +6,18 @@ import { getMongoDb, injectMongoDB } from "src/server/mongodb/mongodb";
 import type { PokerSessionDocument } from "src/server/types/PokerSession";
 
 export default injectMongoDB(async function onPositionSelected(
-	position: "IP" | "OOP",
 	handId: string,
 	sessionId: string,
-) {
+	position: "IP" | "OOP",
+): Promise<void> {
 	const db = getMongoDb();
-	console.log("onPositionSelected", position, handId, sessionId);
 
 	const Session = db.collection<PokerSessionDocument>(SessionCollectionName);
 
 	const session = await Session.findOne({ id: sessionId });
 
 	if (!session) {
-		return null;
+		return;
 	}
 
 	await Session.updateOne(

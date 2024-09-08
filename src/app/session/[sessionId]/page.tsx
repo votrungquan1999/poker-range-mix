@@ -200,6 +200,18 @@ function RecordHandSection({
 
 	const selectedHand = hand.streets[currentStreet]?.hand;
 
+	const bindedOnPositionSelected = onPositionSelected.bind(
+		null,
+		hand.id,
+		sessionId,
+	);
+	const bindedOnHandStrengthSelected = onHandStrengthSelected.bind(
+		null,
+		currentStreet,
+		hand.id,
+		sessionId,
+	);
+
 	return (
 		<div className="flex flex-col p-4">
 			<div className="flex flex-row justify-between">
@@ -223,19 +235,13 @@ function RecordHandSection({
 						<HandButton
 							value="IP"
 							selectedValue={hand.position}
-							action={async () => {
-								"use server";
-								await onPositionSelected("IP", hand.id, sessionId);
-							}}
+							action={bindedOnPositionSelected}
 						/>
 
 						<HandButton
 							value="OOP"
 							selectedValue={hand.position}
-							action={async () => {
-								"use server";
-								await onPositionSelected("OOP", hand.id, sessionId);
-							}}
+							action={bindedOnPositionSelected}
 						/>
 					</div>
 				</div>
@@ -270,57 +276,25 @@ function RecordHandSection({
 						<HandButton
 							value="WEAK"
 							selectedValue={selectedHand}
-							action={async () => {
-								"use server";
-								await onHandStrengthSelected(
-									"WEAK",
-									currentStreet,
-									hand.id,
-									sessionId,
-								);
-							}}
+							action={bindedOnHandStrengthSelected}
 						/>
 
 						<HandButton
 							value="MED"
 							selectedValue={selectedHand}
-							action={async () => {
-								"use server";
-								await onHandStrengthSelected(
-									"MED",
-									currentStreet,
-									hand.id,
-									sessionId,
-								);
-							}}
+							action={bindedOnHandStrengthSelected}
 						/>
 
 						<HandButton
 							value="STR"
 							selectedValue={selectedHand}
-							action={async () => {
-								"use server";
-								await onHandStrengthSelected(
-									"STR",
-									currentStreet,
-									hand.id,
-									sessionId,
-								);
-							}}
+							action={bindedOnHandStrengthSelected}
 						/>
 
 						<HandButton
 							value="NUT"
 							selectedValue={selectedHand}
-							action={async () => {
-								"use server";
-								await onHandStrengthSelected(
-									"NUT",
-									currentStreet,
-									hand.id,
-									sessionId,
-								);
-							}}
+							action={bindedOnHandStrengthSelected}
 						/>
 					</div>
 				</div>
@@ -377,10 +351,18 @@ function HandButton({
 }: {
 	value: string;
 	selectedValue?: string;
-	action?: () => Promise<void>;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	action?: (value: any) => Promise<void>;
 }) {
 	return (
-		<form action={action}>
+		<form
+			action={async () => {
+				"use server";
+				if (!action) return;
+
+				await action(value);
+			}}
+		>
 			<button
 				type={action ? "submit" : "button"}
 				className={clsx(

@@ -10,10 +10,10 @@ import type {
 } from "src/server/types/PokerSession";
 
 export default injectMongoDB(async function onHandStrengthSelected(
-	hand: HandType,
 	street: StreetType,
 	handId: string,
 	sessionId: string,
+	hand: HandType,
 ): Promise<void> {
 	const db = getMongoDb();
 
