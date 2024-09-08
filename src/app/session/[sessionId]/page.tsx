@@ -15,6 +15,7 @@ import type {
 import onActionSelected from "./onActionSelected";
 import onHandStrengthSelected from "./onHandStrengthSelected";
 import onPositionSelected from "./onPositionSelected";
+import handleNextStreet from "./handleNextStreet";
 
 export const metadata: Metadata = {
 	title: "#Session Name here",
@@ -187,16 +188,12 @@ function HandHistorySection({
 	);
 }
 
-const streetOrder = ["FLOP", "TURN", "RIVER"] as const;
 function RecordHandSection({
 	hand,
 	sessionId,
 }: { hand: PokerHand; sessionId: string }) {
 	// currentStreet is the last street that has an action or hand recorded
-	const currentStreet =
-		streetOrder.find(
-			(street) => hand.streets[street]?.action || hand.streets[street]?.hand,
-		) ?? "FLOP";
+	const currentStreet = hand.activeStreet ?? "FLOP";
 
 	const selectedHand = hand.streets[currentStreet]?.hand;
 
@@ -216,6 +213,12 @@ function RecordHandSection({
 	const bindedOnActionSelected = onActionSelected.bind(
 		null,
 		currentStreet,
+		hand.id,
+		sessionId,
+	);
+
+	const bindedHandleNextStreet = handleNextStreet.bind(
+		null,
 		hand.id,
 		sessionId,
 	);
@@ -257,23 +260,25 @@ function RecordHandSection({
 				<div className="flex flex-col">
 					<h2 className="text-lg font-semibold">Street</h2>
 
-					<div className="flex flex-row gap-10 pr-4">
+					<div className="flex flex-row gap-10 pr-4 items-center">
 						<p className="text-xl px-2 py-1 rounded border border-blue-600 shadow outline-blue-600 text-blue-600">
 							{currentStreet}
 						</p>
 
-						<button
-							type={currentStreet === "RIVER" ? "button" : "submit"}
-							className={clsx(
-								"flex flex-row gap-2 items-center underline text-blue-600 text-lg whitespace-nowrap hover:outline outline-blue-400 rounded outline-2 px-2",
-								{
-									"opacity-50": currentStreet === "RIVER",
-								},
-							)}
-						>
-							Next Street
-							<ArrowRightIcon className="w-6 h-6" />
-						</button>
+						<form action={bindedHandleNextStreet}>
+							<button
+								type={currentStreet === "RIVER" ? "button" : "submit"}
+								className={clsx(
+									"flex flex-row gap-2 items-center underline text-blue-600 text-lg whitespace-nowrap hover:outline outline-blue-400 rounded outline-2 px-2",
+									{
+										"opacity-50": currentStreet === "RIVER",
+									},
+								)}
+							>
+								Next Street
+								<ArrowRightIcon className="w-6 h-6" />
+							</button>
+						</form>
 					</div>
 				</div>
 

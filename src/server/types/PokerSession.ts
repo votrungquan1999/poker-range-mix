@@ -14,6 +14,8 @@ export interface PokerHand {
 	order: number;
 
 	position?: PositionType;
+	activeStreet?: StreetType;
+
 	streets: {
 		PRE?: PokerStreet;
 		FLOP?: PokerStreet;
