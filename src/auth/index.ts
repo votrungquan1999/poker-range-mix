@@ -9,10 +9,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 				return false;
 			}
 
-			if (
-				account.provider === "google" &&
-				user.email === "votrungquan99@gmail.com"
-			) {
+			if (account.provider === "google" && user.email) {
 				return true;
 			}
 
