@@ -10,7 +10,7 @@ import createNewSession from "src/server/actions/createNewSession";
 import RelativeTime from "src/components/RelativeTime";
 import Pagination from "src/components/Pagination";
 import { auth } from "src/auth";
-import { cookies } from "next/headers";
+import getClientDateFormatter from "src/server/getClientDateFormatter";
 
 export const metadata: Metadata = {
 	title: "Poker Range Mixing - All Sessions",
@@ -138,15 +138,7 @@ function SessionsDisplay({
 		);
 	}
 
-	const cookieStore = cookies();
-
-	const timeZone = cookieStore.get("clientTimeZone");
-
-	const dateFormatter = new Intl.DateTimeFormat("en-US", {
-		dateStyle: "medium",
-		timeStyle: "short",
-		timeZone: timeZone?.value,
-	});
+	const dateFormatter = getClientDateFormatter();
 
 	return (
 		<div className="flex flex-col gap-2">
@@ -163,8 +155,6 @@ function SessionsDisplay({
 
 						<p className="text-slate-800">
 							<span className="text-slate-500">Last played at: </span>
-
-							{/* <ClientTimeDisplay time={session.updatedAt} /> */}
 
 							{dateFormatter.format(session.updatedAt)}
 						</p>

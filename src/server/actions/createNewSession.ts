@@ -6,12 +6,10 @@ import { nanoid } from "nanoid";
 import type { PokerSessionDocument } from "../types/PokerSession";
 import { redirect } from "next/navigation";
 import { SessionCollectionName } from "../collectionNames";
-import { cookies } from "next/headers";
+import getClientDateFormatter from "../getClientDateFormatter";
 
 export default injectMongoDB(async function createNewSession() {
 	const loginSession = await auth();
-
-	const cookieStore = cookies();
 
 	if (!loginSession || !loginSession.user) {
 		throw new Error("User not authenticated");
@@ -23,13 +21,7 @@ export default injectMongoDB(async function createNewSession() {
 
 	const id = nanoid();
 
-	const timeZone = cookieStore.get("clientTimeZone");
-
-	const dateFormatter = new Intl.DateTimeFormat("en-US", {
-		dateStyle: "medium",
-		timeStyle: "short",
-		timeZone: timeZone?.value,
-	});
+	const dateFormatter = getClientDateFormatter();
 
 	await collection.insertOne({
 		createdBy: loginSession.user.email ?? "Anonymous",

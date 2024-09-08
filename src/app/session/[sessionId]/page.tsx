@@ -19,6 +19,7 @@ import handleNextStreet from "./handleNextStreet";
 import handleNewHand from "./handleNewHand";
 import SessionNameInput from "./SessionNameInput";
 import { auth } from "src/auth";
+import getClientDateFormatter from "src/server/getClientDateFormatter";
 
 export async function generateMetadata({
 	params,
@@ -33,11 +34,6 @@ export async function generateMetadata({
 		title: `PRM - ${session.name}`,
 	};
 }
-
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-	dateStyle: "medium",
-	timeStyle: "short",
-});
 
 const getSessionById = injectMongoDB(async function getSessionById(
 	sessionId: string,
@@ -71,6 +67,8 @@ export default async function Session({
 	}
 
 	const lastHand = session.hands[session.hands.length - 1];
+
+	const dateFormatter = getClientDateFormatter();
 
 	return (
 		<div className="flex flex-col divide-y divide-blue-200">
