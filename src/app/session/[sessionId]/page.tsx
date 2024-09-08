@@ -357,6 +357,12 @@ function RecordHandSection({
 						/>
 
 						<HandButton
+							value="DRAW"
+							selectedValue={selectedHand}
+							action={bindedOnHandStrengthSelected}
+						/>
+
+						<HandButton
 							value="NUT"
 							selectedValue={selectedHand}
 							action={bindedOnHandStrengthSelected}
