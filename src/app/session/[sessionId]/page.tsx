@@ -163,6 +163,7 @@ function getActionsByHandStrength(
 		},
 		{
 			Check: 0,
+			Call: 0,
 			"Check-Raise": 0,
 			Bet: 0,
 			"Re-Raise": 0,
@@ -390,6 +391,12 @@ function RecordHandSection({
 					<div className="flex flex-row flex-wrap gap-6">
 						<ActionButton
 							action="Check"
+							selectedAction={selectedAction}
+							onClick={bindedOnActionSelected}
+						/>
+
+						<ActionButton
+							action="Call"
 							selectedAction={selectedAction}
 							onClick={bindedOnActionSelected}
 						/>

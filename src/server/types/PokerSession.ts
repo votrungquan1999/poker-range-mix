@@ -39,6 +39,7 @@ export type HandType = "WEAK" | "MED" | "STR" | "DRAW" | "NUT";
 
 export type ActionType =
 	| "Check"
+	| "Call"
 	| "Check-Raise"
 	| "Bet"
 	| "Re-Raise"
