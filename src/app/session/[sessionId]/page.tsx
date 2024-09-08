@@ -93,7 +93,7 @@ export default async function Session({
 				<p className="text-slate-800 px-2">
 					<span className="text-slate-500">Last played at: </span>
 
-					{dateFormatter.format(Date.now())}
+					{dateFormatter.format(lastHand.playedAt)}
 				</p>
 			</header>
 
