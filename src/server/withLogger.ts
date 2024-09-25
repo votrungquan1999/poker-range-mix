@@ -18,13 +18,14 @@ export default function withLogger<T extends AnyAsyncFunction>(fn: T) {
 	return asyncLocal.inject(
 		async (...args: Parameters<T>): Promise<ReturnType<T>> => {
 			const start = Date.now();
-			console.log(`${fn.name} called`);
-			console.log(`| ${start} | start`);
 
 			const result = await fn(...args);
 
 			const logger = asyncLocal.get();
 			const logs = logger.getLogs();
+
+			console.log(`${fn.name} called`);
+			console.log(`| ${start} | start`);
 
 			for (const log of logs) {
 				console.log(`| ${log.timestamp} | ${log.message}`);
