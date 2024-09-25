@@ -22,9 +22,6 @@ import { auth } from "src/auth";
 import getClientDateFormatter from "src/server/getClientDateFormatter";
 import UserAccount from "src/components/UserAccount";
 import withLogger from "src/server/withLogger";
-import { flow } from "src/server/asynclocal";
-
-const injectDependencies = flow(injectMongoDB, withLogger);
 
 export async function generateMetadata({
 	params,
@@ -40,17 +37,19 @@ export async function generateMetadata({
 	};
 }
 
-const getSessionById = injectDependencies(async function getSessionById(
-	sessionId: string,
-) {
-	const db = getMongoDb();
+const getSessionById = injectMongoDB(
+	withLogger(async function getSessionById(sessionId: string) {
+		const db = getMongoDb();
 
-	const collection = db.collection<PokerSessionDocument>(SessionCollectionName);
+		const collection = db.collection<PokerSessionDocument>(
+			SessionCollectionName,
+		);
 
-	const session = await collection.findOne({ id: sessionId });
+		const session = await collection.findOne({ id: sessionId });
 
-	return session;
-});
+		return session;
+	}),
+);
 
 export default async function Session({
 	params,
@@ -123,29 +122,33 @@ type ActionHistory = {
 	[key in HandType]: Record<ActionType, number>;
 };
 
-const getActionHistory = injectDependencies(async function getActionHistory(
-	sessionId: string,
-): Promise<ActionHistory> {
-	const db = getMongoDb();
+const getActionHistory = injectMongoDB(
+	withLogger(async function getActionHistory(
+		sessionId: string,
+	): Promise<ActionHistory> {
+		const db = getMongoDb();
 
-	const collection = db.collection<PokerSessionDocument>(SessionCollectionName);
+		const collection = db.collection<PokerSessionDocument>(
+			SessionCollectionName,
+		);
 
-	const session = await collection.findOne({ id: sessionId });
+		const session = await collection.findOne({ id: sessionId });
 
-	if (!session) {
-		throw new Error("Session not found");
-	}
+		if (!session) {
+			throw new Error("Session not found");
+		}
 
-	const actionHistory: ActionHistory = {
-		WEAK: getActionsByHandStrength(session.hands, "WEAK"),
-		MED: getActionsByHandStrength(session.hands, "MED"),
-		STR: getActionsByHandStrength(session.hands, "STR"),
-		DRAW: getActionsByHandStrength(session.hands, "DRAW"),
-		NUT: getActionsByHandStrength(session.hands, "NUT"),
-	};
+		const actionHistory: ActionHistory = {
+			WEAK: getActionsByHandStrength(session.hands, "WEAK"),
+			MED: getActionsByHandStrength(session.hands, "MED"),
+			STR: getActionsByHandStrength(session.hands, "STR"),
+			DRAW: getActionsByHandStrength(session.hands, "DRAW"),
+			NUT: getActionsByHandStrength(session.hands, "NUT"),
+		};
 
-	return actionHistory;
-});
+		return actionHistory;
+	}),
+);
 
 function getActionsByHandStrength(
 	hands: PokerHand[],

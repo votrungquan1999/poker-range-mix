@@ -14,9 +14,12 @@ type AnyAsyncFunction = (...args: any[]) => Promise<any>;
 // | ${timestamp} | duration
 // empty line
 // ```
-export default function withLogger<T extends AnyAsyncFunction>(fn: T) {
+export default function withLogger<T extends AnyAsyncFunction>(
+	fn: T,
+	name?: string,
+) {
 	return asyncLocal.inject(
-		async (...args: Parameters<T>): Promise<ReturnType<T>> => {
+		async (...args: Parameters<T>): Promise<Awaited<ReturnType<T>>> => {
 			const start = Date.now();
 
 			const result = await fn(...args);
@@ -24,7 +27,9 @@ export default function withLogger<T extends AnyAsyncFunction>(fn: T) {
 			const logger = asyncLocal.get();
 			const logs = logger.getLogs();
 
-			console.log(`${fn.name} called`);
+			const fnName = name ?? fn.name;
+
+			console.log(`${fnName} called`);
 			console.log(`| ${start} | start`);
 
 			for (const log of logs) {

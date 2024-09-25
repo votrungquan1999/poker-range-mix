@@ -13,15 +13,13 @@ import { auth } from "src/auth";
 import getClientDateFormatter from "src/server/getClientDateFormatter";
 import UserAccount from "src/components/UserAccount";
 import withLogger from "src/server/withLogger";
-import { flow } from "src/server/asynclocal";
 
 export const metadata: Metadata = {
 	title: "Poker Range Mixing - All Sessions",
 };
 
-const injectDependencies = flow(injectMongoDB, withLogger);
-
-const getAllSessions = injectDependencies(async function getAllSessions(
+const getAllSessions = injectMongoDB(
+	withLogger(async function getAllSessions(
 	userId: string,
 	currentPage: number,
 ) {
@@ -48,7 +46,8 @@ const getAllSessions = injectDependencies(async function getAllSessions(
 		sessions,
 		sessionCount,
 	};
-});
+	}),
+);
 
 export default async function SessionsPage({
 	searchParams,
