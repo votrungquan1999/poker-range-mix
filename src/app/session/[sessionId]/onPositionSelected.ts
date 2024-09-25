@@ -4,8 +4,12 @@ import action_refresh from "src/server/actions/action_refresh";
 import { SessionCollectionName } from "src/server/collectionNames";
 import { getMongoDb, injectMongoDB } from "src/server/mongodb/mongodb";
 import type { PokerSessionDocument } from "src/server/types/PokerSession";
+import withLogger from "src/server/withLogger";
+import { flow } from "src/server/asynclocal";
 
-export default injectMongoDB(async function onPositionSelected(
+const injectDependencies = flow(injectMongoDB, withLogger);
+
+export default injectDependencies(async function onPositionSelected(
 	handId: string,
 	sessionId: string,
 	position: "IP" | "OOP",

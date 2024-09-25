@@ -21,6 +21,10 @@ import SessionNameInput from "./SessionNameInput";
 import { auth } from "src/auth";
 import getClientDateFormatter from "src/server/getClientDateFormatter";
 import UserAccount from "src/components/UserAccount";
+import withLogger from "src/server/withLogger";
+import { flow } from "src/server/asynclocal";
+
+const injectDependencies = flow(injectMongoDB, withLogger);
 
 export async function generateMetadata({
 	params,
@@ -36,7 +40,7 @@ export async function generateMetadata({
 	};
 }
 
-const getSessionById = injectMongoDB(async function getSessionById(
+const getSessionById = injectDependencies(async function getSessionById(
 	sessionId: string,
 ) {
 	const db = getMongoDb();
@@ -119,7 +123,7 @@ type ActionHistory = {
 	[key in HandType]: Record<ActionType, number>;
 };
 
-const getActionHistory = injectMongoDB(async function getActionHistory(
+const getActionHistory = injectDependencies(async function getActionHistory(
 	sessionId: string,
 ): Promise<ActionHistory> {
 	const db = getMongoDb();

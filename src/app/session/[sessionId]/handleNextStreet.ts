@@ -1,16 +1,19 @@
 "use server";
 
 import action_refresh from "src/server/actions/action_refresh";
+import { flow } from "src/server/asynclocal";
 import { SessionCollectionName } from "src/server/collectionNames";
 import { getMongoDb, injectMongoDB } from "src/server/mongodb/mongodb";
 import type {
 	PokerSessionDocument,
 	StreetType,
 } from "src/server/types/PokerSession";
-
+import withLogger from "src/server/withLogger";
 const streetOrder: StreetType[] = ["FLOP", "TURN", "RIVER"];
 
-export default injectMongoDB(async function handleNextStreet(
+const injectDependencies = flow(injectMongoDB, withLogger);
+
+export default injectDependencies(async function handleNextStreet(
 	handId: string,
 	sessionId: string,
 ) {

@@ -5,8 +5,13 @@ import action_refresh from "src/server/actions/action_refresh";
 import { SessionCollectionName } from "src/server/collectionNames";
 import { getMongoDb, injectMongoDB } from "src/server/mongodb/mongodb";
 import type { PokerSessionDocument } from "src/server/types/PokerSession";
+import withLogger from "src/server/withLogger";
+import { flow } from "src/server/asynclocal";
+const injectDependencies = flow(injectMongoDB, withLogger);
 
-export default injectMongoDB(async function handleNewHand(sessionId: string) {
+export default injectDependencies(async function handleNewHand(
+	sessionId: string,
+) {
 	const db = getMongoDb();
 
 	const session = await db

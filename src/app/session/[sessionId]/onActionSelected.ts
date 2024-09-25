@@ -8,8 +8,12 @@ import type {
 	PokerSessionDocument,
 	StreetType,
 } from "src/server/types/PokerSession";
+import withLogger from "src/server/withLogger";
+import { flow } from "src/server/asynclocal";
 
-export default injectMongoDB(async function onActionSelected(
+const injectDependencies = flow(injectMongoDB, withLogger);
+
+export default injectDependencies(async function onActionSelected(
 	street: StreetType,
 	handId: string,
 	sessionId: string,

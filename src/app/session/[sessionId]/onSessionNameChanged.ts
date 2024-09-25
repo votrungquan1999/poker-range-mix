@@ -3,8 +3,12 @@
 import { SessionCollectionName } from "src/server/collectionNames";
 import { getMongoDb, injectMongoDB } from "src/server/mongodb/mongodb";
 import type { PokerSessionDocument } from "src/server/types/PokerSession";
+import withLogger from "src/server/withLogger";
+import { flow } from "src/server/asynclocal";
 
-export default injectMongoDB(async function onSessionNameChanged(
+const injectDependencies = flow(injectMongoDB, withLogger);
+
+export default injectDependencies(async function onSessionNameChanged(
 	sessionId: string,
 	newName: string,
 ): Promise<void> {
