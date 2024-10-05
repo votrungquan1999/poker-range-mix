@@ -3,8 +3,8 @@ import createNewSession from "src/server/actions/createNewSession";
 
 export default (async function Home() {
 	return (
-		<div className="flex flex-col items-center gap-20 flex-1">
-			<h1 className="text-3xl text-blue-800 mt-8 font-bold absolute top-0">
+		<div className="flex flex-col items-center gap-20 flex-1 relative">
+			<h1 className="text-3xl text-blue-800 mt-8 font-bold text-center whitespace-normal absolute top-0">
 				WELCOME TO POKER RANGE MIXING
 			</h1>
 
@@ -20,6 +20,12 @@ export default (async function Home() {
 
 				<Link href="/sessions" className="text-blue-600 underline">
 					Browse existing Sessions
+				</Link>
+
+				<hr className="w-full border-t border-slate-200 self-stretch" />
+
+				<Link href="/randomizer" className="text-blue-600 underline">
+					Go to Randomizer
 				</Link>
 			</div>
 		</div>
